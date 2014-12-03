@@ -25,31 +25,41 @@
 package org.spongepowered.mod;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Platform;
-import org.spongepowered.api.entity.Player;
-import org.spongepowered.api.event.EventManager;
+import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.service.ServiceManager;
-import org.spongepowered.api.service.command.CommandDispatcher;
+import org.spongepowered.api.service.command.CommandService;
+import org.spongepowered.api.service.event.EventManager;
 import org.spongepowered.api.service.scheduler.Scheduler;
 import org.spongepowered.api.text.message.Message;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+@NonnullByDefault
 public final class SpongeGame implements Game {
 
+    @Nullable
     private static final String apiVersion = Game.class.getPackage().getImplementationVersion();
+    @Nullable
     private static final String implementationVersion = SpongeGame.class.getPackage().getImplementationVersion();
     private final PluginManager pluginManager;
     private final EventManager eventManager;
@@ -84,18 +94,17 @@ public final class SpongeGame implements Game {
 
     @Override
     public Collection<World> getWorlds() {
-        throw new UnsupportedOperationException();
-        /*List<World> worlds = new ArrayList<World>();
+        List<World> worlds = new ArrayList<World>();
         for (WorldServer worldServer : DimensionManager.getWorlds()) {
             worlds.add((World) worldServer);
         }
-        return worlds;*/
+        return worlds;
     }
 
     @Override
     public World getWorld(UUID uniqueId) {
         // TODO: This needs to map to world id's somehow
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -109,9 +118,14 @@ public final class SpongeGame implements Game {
     }
 
     @Override
-    @SideOnly(Side.SERVER)
     public void broadcastMessage(Message<?> message) {
-        MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText((String) message.getContent()));//TODO implement this properly
+        @Nullable
+        MinecraftServer server = getServer();
+
+        if (server != null) {
+            // TODO: Revisit this when text API is actually implemented.
+            server.getConfigurationManager().sendChatMsg(new ChatComponentText((String) message.getContent()));
+        }
     }
 
     @Override
@@ -131,7 +145,7 @@ public final class SpongeGame implements Game {
 
     @Override
     public ServiceManager getServiceManager() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -140,27 +154,61 @@ public final class SpongeGame implements Game {
     }
 
     @Override
-    public CommandDispatcher getCommandDispatcher() {
-        return null;
+    public CommandService getCommandDispatcher() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Player> getOnlinePlayers() {
-        throw new UnsupportedOperationException();
+        @Nullable
+        MinecraftServer server = getServer();
+
+        if (server != null) {
+            return ImmutableList.copyOf((List<Player>)server.getConfigurationManager().playerEntityList);
+        } else {
+            throw new IllegalStateException("There is no running server.");
+        }
     }
 
     @Override
     public int getMaxPlayers() {
-        throw new UnsupportedOperationException();
+        @Nullable
+        MinecraftServer server = getServer();
+
+        if (server != null) {
+            return server.getMaxPlayers();
+        } else {
+            throw new IllegalStateException("There is no running server.");
+        }
     }
 
     @Override
     public Optional<Player> getPlayer(UUID uniqueId) {
-        throw new UnsupportedOperationException();
+        @Nullable
+        MinecraftServer server = getServer();
+
+        if (server != null) {
+            return Optional.fromNullable((Player) server.getConfigurationManager().func_177451_a(uniqueId));
+        } else {
+            return Optional.absent();
+        }
     }
 
     @Override
     public Optional<Player> getPlayer(String name) {
-        throw new UnsupportedOperationException();
+        @Nullable
+        MinecraftServer server = getServer();
+
+        if (server != null) {
+            return Optional.fromNullable((Player) server.getConfigurationManager().getPlayerByUsername(name));
+        } else {
+            return Optional.absent();
+        }
+    }
+
+    @Nullable
+    public MinecraftServer getServer() {
+        return FMLCommonHandler.instance().getMinecraftServerInstance();
     }
 }

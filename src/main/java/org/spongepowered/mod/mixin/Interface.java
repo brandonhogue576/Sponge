@@ -22,37 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.mod.event;
+package org.spongepowered.mod.mixin;
 
-import org.spongepowered.api.util.event.Order;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class PriorityEventListener<T> implements EventListener<T>, Comparable<PriorityEventListener<T>> {
-
-    private final EventListener<T> listener;
-    private final Order order;
-    private EventListenerHolder<T> holder;
-
-    public PriorityEventListener(Order order, EventListener<T> listener) {
-        this.listener = listener;
-        this.order = order;
-    }
-
-    public EventListenerHolder<T> getHolder() {
-        return holder;
-    }
-
-    public void setHolder(EventListenerHolder<T> holder) {
-        this.holder = holder;
-    }
-
-    @Override
-    public void invoke(T event) {
-        listener.invoke(event);
-    }
-
-    @Override
-    public int compareTo(PriorityEventListener<T> o) {
-        return order.compareTo(o.order);
-    }
+/**
+ * I'm probably going to the special hell for this
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface Interface {
+    
+    /**
+     * Interface that the parent {@link Implements} indicates the mixin implements. The interface will be hot-patched onto the target class as part
+     * of the mixin application.
+     */
+    public Class<?> iface();
+    
+    /**
+     * [Required] prefix for implementing interface methods. Works similarly to {@link Shadow} prefixes, but <b>must</b> end with a dollar sign ($)
+     */
+    public String prefix();
 
 }

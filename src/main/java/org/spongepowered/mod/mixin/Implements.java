@@ -22,37 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.mod.event;
+package org.spongepowered.mod.mixin;
 
-import org.spongepowered.api.util.event.Order;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class PriorityEventListener<T> implements EventListener<T>, Comparable<PriorityEventListener<T>> {
-
-    private final EventListener<T> listener;
-    private final Order order;
-    private EventListenerHolder<T> holder;
-
-    public PriorityEventListener(Order order, EventListener<T> listener) {
-        this.listener = listener;
-        this.order = order;
-    }
-
-    public EventListenerHolder<T> getHolder() {
-        return holder;
-    }
-
-    public void setHolder(EventListenerHolder<T> holder) {
-        this.holder = holder;
-    }
-
-    @Override
-    public void invoke(T event) {
-        listener.invoke(event);
-    }
-
-    @Override
-    public int compareTo(PriorityEventListener<T> o) {
-        return order.compareTo(o.order);
-    }
-
+/**
+ * Pseudo-implements decorator for Mixins with conflicting methods in a superclass to soft-implement an interface
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface Implements {
+    
+    /**
+     * Interfaces implemented, see javadoc in {@link Interface}
+     */
+    public Interface[] value();
 }

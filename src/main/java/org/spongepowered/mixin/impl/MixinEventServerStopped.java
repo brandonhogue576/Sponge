@@ -28,30 +28,17 @@ package org.spongepowered.mixin.impl;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Result;
 import org.spongepowered.api.event.state.ServerStoppedEvent;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+import org.spongepowered.mod.SpongeMod;
 import org.spongepowered.mod.mixin.Mixin;
 
+@NonnullByDefault
 @Mixin(FMLServerStoppedEvent.class)
 public abstract class MixinEventServerStopped extends FMLStateEvent implements ServerStoppedEvent {
 
     @Override
-    public boolean isCancellable() {
-        return false;
-    }
-
-    @Override
-    public Result getResult() {
-        return Result.NO_RESULT;
-    }
-
-    @Override
-    public void setResult(Result result) {
-
-    }
-
-    @Override
     public Game getGame() {
-        return null;
+        return SpongeMod.instance.getGame();
     }
 }

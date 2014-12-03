@@ -22,37 +22,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.mod.event;
+package org.spongepowered.mixin.interfaces;
 
-import org.spongepowered.api.util.event.Order;
+import net.minecraft.entity.EntityLivingBase;
 
-public class PriorityEventListener<T> implements EventListener<T>, Comparable<PriorityEventListener<T>> {
+import org.spongepowered.mod.mixin.Implements;
 
-    private final EventListener<T> listener;
-    private final Order order;
-    private EventListenerHolder<T> holder;
 
-    public PriorityEventListener(Order order, EventListener<T> listener) {
-        this.listener = listener;
-        this.order = order;
-    }
+/**
+ * An example mixin interface which contains a method whose signature conflicts with a method in the target class
+ */
+public interface IEntityPlayerConflict extends IWorld {
 
-    public EventListenerHolder<T> getHolder() {
-        return holder;
-    }
-
-    public void setHolder(EventListenerHolder<T> holder) {
-        this.holder = holder;
-    }
-
-    @Override
-    public void invoke(T event) {
-        listener.invoke(event);
-    }
-
-    @Override
-    public int compareTo(PriorityEventListener<T> o) {
-        return order.compareTo(o.order);
-    }
-
+    /**
+     * In {@link EntityLivingBase}, this same method exists but returns a float. Whilst java bytecode would actually allow both methods to exist, the
+     * java compiler doesn't support this. This conflict is deliberately here to demostrate the use of the {@link Implements} annotation in
+     * {@link MixinEntityPlayerExample}
+     */
+    public abstract double getHealth();
+    
+    /**
+     * Additional method which doesn't conflict
+     */
+    public abstract int thisMethodDoesNotConflict();
+    
+    /**
+     * Additional method with no conflicts
+     */
+    public abstract int norDoesThisOne();
 }

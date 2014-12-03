@@ -76,7 +76,7 @@ public class SpongeMod extends DummyModContainer {
 
     public void registerPluginContainer(SpongePluginContainer spongePluginContainer, String pluginId, Object proxyInstance) {
         plugins.put(proxyInstance, spongePluginContainer);
-        game.getEventManager().register(spongePluginContainer.getInstance());
+        game.getEventManager().register(spongePluginContainer.getInstance(), spongePluginContainer.getInstance());
     }
 
     public Collection<PluginContainer> getPlugins() {
@@ -116,7 +116,7 @@ public class SpongeMod extends DummyModContainer {
 
     @Subscribe
     public void onInitialization(FMLInitializationEvent e) {
-        SpongeGameRegistry registry = (SpongeGameRegistry)game.getRegistry();
+        SpongeGameRegistry registry = (SpongeGameRegistry) game.getRegistry();
 
         registry.setBlockTypes();
         registry.setItemTypes();

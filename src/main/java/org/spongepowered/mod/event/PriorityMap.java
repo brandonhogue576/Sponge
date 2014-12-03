@@ -31,7 +31,7 @@ import static net.minecraftforge.fml.common.eventhandler.EventPriority.LOWEST;
 import static net.minecraftforge.fml.common.eventhandler.EventPriority.NORMAL;
 
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import org.spongepowered.api.event.Order;
+import org.spongepowered.api.util.event.Order;
 
 public class PriorityMap {
 
